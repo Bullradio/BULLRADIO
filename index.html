@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="it">
 
 <head>
@@ -46,15 +46,17 @@ body{
 }
 
 .container{
-    position:relative;
+    position:fixed;
     z-index:10;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    height:100vh;
+    height:100%;
+    width:100%;
     padding:20px;
     text-align:center;
+    overflow:hidden;
 }
 
 .logo{
@@ -63,7 +65,7 @@ body{
     object-fit:cover;
     border-radius:30px;
     box-shadow:0 0 30px rgba(255,255,255,0.25);
-    animation:pulse 3s infinite;
+
     opacity:0.75;
 }
 
@@ -129,9 +131,10 @@ h1{
 .visualizer{
     display:flex;
     gap:6px;
-    margin-top:30px;
-    height:50px;
+    height:40px;
     align-items:flex-end;
+    position:absolute;
+    bottom:80px;
 }
 
 .bar{
@@ -139,6 +142,7 @@ h1{
     background:white;
     border-radius:10px;
     animation:bounce 1s infinite ease-in-out;
+    position:relative;
 }
 
 .bar:nth-child(2){animation-delay:0.1s;}
@@ -148,12 +152,16 @@ h1{
 
 @keyframes bounce{
     0%,100%{
-        height:10px;
+        height:5px;
         opacity:0.3;
+        transform:scaleY(1);
+        transform-origin:bottom;
     }
     50%{
-        height:50px;
+        height:40px;
         opacity:1;
+        transform:scaleY(1);
+        transform-origin:bottom;
     }
 }
 
@@ -235,7 +243,7 @@ Facebook
 </div>
 
 <div class="listeners">
-ONLINE: <span id="listenerCount">1472</span>
+ONLINE: <span id="listenerCount">...</span>
 </div>
 
 <div class="footer">
@@ -294,44 +302,44 @@ radio.onerror = function(){
     statusText.innerHTML = "Errore Stream";
 }
 
-/* CONTATORE REALISTICO */
+/* CONTATORE SINCRONIZZATO - uguale per tutti basato sull'orario */
 
-let baseListeners = Math.floor(Math.random() * 4200) + 600;
+// 25 numeri base tra 800 e 2000
+const baseListeners = [
+    1250, 1480, 1720, 980, 1560,
+    1890, 1340, 1670, 840, 1120,
+    1950, 1430, 1780, 1060, 1590,
+    920, 1820, 1380, 1640, 870,
+    1990, 1150, 1530, 1760, 1040
+];
 
-let listeners = baseListeners;
+function getSyncedListeners() {
+    const now = new Date();
+    // Cambia numero base ogni 40 minuti
+    const slot40 = Math.floor((now.getHours() * 60 + now.getMinutes()) / 40);
+    const baseIndex = slot40 % baseListeners.length;
+    const base = baseListeners[baseIndex];
 
-document.getElementById("listenerCount").innerHTML = listeners;
+    // Piccolo incremento/decremento basato sui secondi (uguale per tutti)
+    const seconds = now.getSeconds();
+    const micro = Math.floor(seconds / 10) * 7;
+    const direction = (Math.floor(now.getMinutes() / 5) % 2 === 0) ? 1 : -1;
 
-/* PICCOLE VARIAZIONI OGNI 2 MINUTI E MEZZO */
+    return base + (micro * direction);
+}
 
-setInterval(() => {
+function updateListeners() {
+    const count = getSyncedListeners();
+    document.getElementById("listenerCount").innerHTML = count;
+}
 
-    let change = Math.floor(Math.random() * 18);
+updateListeners();
 
-    if(Math.random() > 0.5){
-        listeners += change;
-    }else{
-        listeners -= change;
-    }
-
-    if(listeners < baseListeners - 80){
-        listeners = baseListeners - 80;
-    }
-
-    if(listeners > baseListeners + 80){
-        listeners = baseListeners + 80;
-    }
-
-    document.getElementById("listenerCount").innerHTML = listeners;
-
-}, 150000);
-
-/* NUOVO NUMERO BASE OGNI 70 MINUTI */
-
-setInterval(() => {
-
-    baseListeners = Math.floor(Math.random() * 4200) + 600;
-
-}, 4200000);
+// Aggiorna ogni 90 secondi
+setInterval(updateListeners, 90000);
 
 </script>
+
+</body>
+</html>
+
