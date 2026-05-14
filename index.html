@@ -294,15 +294,19 @@ radio.onerror = function(){
     statusText.innerHTML = "Errore Stream";
 }
 
-/* CONTATORE RANDOM */
+/* CONTATORE REALISTICO */
 
-let listeners = Math.floor(Math.random() * 600) + 1200;
+let baseListeners = Math.floor(Math.random() * 4200) + 600;
+
+let listeners = baseListeners;
 
 document.getElementById("listenerCount").innerHTML = listeners;
 
+/* PICCOLE VARIAZIONI OGNI 2 MINUTI E MEZZO */
+
 setInterval(() => {
 
-    let change = Math.floor(Math.random() * 15);
+    let change = Math.floor(Math.random() * 18);
 
     if(Math.random() > 0.5){
         listeners += change;
@@ -310,19 +314,24 @@ setInterval(() => {
         listeners -= change;
     }
 
-    if(listeners < 1200){
-        listeners = 1200;
+    if(listeners < baseListeners - 80){
+        listeners = baseListeners - 80;
     }
 
-    if(listeners > 1800){
-        listeners = 1800;
+    if(listeners > baseListeners + 80){
+        listeners = baseListeners + 80;
     }
 
     document.getElementById("listenerCount").innerHTML = listeners;
 
-}, 240000);
+}, 150000);
+
+/* NUOVO NUMERO BASE OGNI 70 MINUTI */
+
+setInterval(() => {
+
+    baseListeners = Math.floor(Math.random() * 4200) + 600;
+
+}, 4200000);
 
 </script>
-
-</body>
-</html>
