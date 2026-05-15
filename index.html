@@ -291,15 +291,12 @@ const baseListeners = [
 
 function getSyncedListeners() {
     const now = new Date();
-    // Cambia numero base ogni 40 minuti
     const slot40 = Math.floor((now.getHours() * 60 + now.getMinutes()) / 40);
     const baseIndex = slot40 % baseListeners.length;
     const base = baseListeners[baseIndex];
 
-    // Piccolo incremento/decremento basato sui secondi (uguale per tutti)
-    const seconds = now.getSeconds();
-    const micro = Math.floor(seconds / 10) * 7;
-    const direction = (Math.floor(now.getMinutes() / 5) % 2 === 0) ? 1 : -1;
+    const micro = Math.floor(now.getMinutes() / 5) * 7;
+    const direction = (Math.floor(now.getMinutes() / 10) % 2 === 0) ? 1 : -1;
 
     return base + (micro * direction);
 }
