@@ -282,11 +282,11 @@ radio.onerror = function(){
 
 // 25 numeri base tra 800 e 2000
 const baseListeners = [
-    1250, 1480, 1720, 980, 1560,
-    1890, 1340, 1670, 840, 1120,
-    1950, 1430, 1780, 1060, 1590,
-    920, 1820, 1380, 1640, 870,
-    1990, 1150, 1530, 1760, 1040
+    1252, 1487, 1343, 1561, 1724,
+    1538, 1783, 1592, 1817, 1643,
+    1895, 1672, 1947, 1763, 1821,
+    1594, 1436, 1258, 1063, 1341,
+    1127, 983, 1154, 927, 1046
 ];
 
 function getSyncedListeners() {
@@ -298,7 +298,7 @@ function getSyncedListeners() {
     const base = baseListeners[baseIndex];
     
     // Lista variazioni predefinite (ogni 5 minuti)
-    const variazioni = [0, +15,-3, +28, +2, +10, +5, -12, -20, +1, -8, +18, +4, +5, -15, +5, +3, +22, -10, +2];
+    const variazioni = [0, +15,-3, +28, +2, +10, +6, -12, -20, +1, -8, +18, +4, +5, -15, +1, +3, +22, -10, +2];
     const slotMinuti = Math.floor(now.getMinutes() / 3) % variazioni.length;
     
     return base + variazioni[slotMinuti];
