@@ -291,14 +291,17 @@ const baseListeners = [
 
 function getSyncedListeners() {
     const now = new Date();
+    
+    // Numero base cambia ogni 40 minuti
     const slot40 = Math.floor((now.getHours() * 60 + now.getMinutes()) / 40);
     const baseIndex = slot40 % baseListeners.length;
     const base = baseListeners[baseIndex];
-
-    const micro = Math.floor(now.getMinutes() / 5) * 7;
-    const direction = (Math.floor(now.getMinutes() / 10) % 2 === 0) ? 1 : -1;
-
-    return base + (micro * direction);
+    
+    // Lista variazioni predefinite (ogni 5 minuti)
+    const variazioni = [0, +15,-3, +28, +2, +10, +5, -12, -20, +1, -8, +18, +4, +5, -15, +5, +3, +22, -10, +2];
+    const slotMinuti = Math.floor(now.getMinutes() / 5) % variazioni.length;
+    
+    return base + variazioni[slotMinuti];
 }
 
 function updateListeners() {
