@@ -274,20 +274,24 @@ isPlaying = false;
 radio.onplaying = function(){
     statusText.innerHTML = "Online";
 }
-
 radio.onerror = function(){
     isPlaying = false;
     playBtn.innerHTML = "PLAY";
     statusText.innerHTML = "Riconnessione...";
+    tentaRiconnessione();
+}
+
+function tentaRiconnessione(){
     setTimeout(function(){
+        radio.src = "http://sr10.inmystream.it:8227/stream";
         radio.load();
         radio.play().then(() => {
             playBtn.innerHTML = "STOP";
             statusText.innerHTML = "Online";
             isPlaying = true;
         }).catch(function(){
-            statusText.innerHTML = "Errore Stream";
-            isPlaying = false;
+            statusText.innerHTML = "Riconnessione...";
+            tentaRiconnessione();
         });
     }, 5000);
 }
