@@ -208,6 +208,8 @@ Premi PLAY
 <div class="bar"></div>
 <div class="bar"></div>
 <div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
 </div>
 <div class="listeners">
 ONLINE: <span id="listenerCount">...</span>
@@ -275,7 +277,17 @@ radio.onplaying = function(){
 }
 
 radio.onerror = function(){
-    statusText.innerHTML = "Errore Stream";
+    statusText.innerHTML = "Riconnessione...";
+    setTimeout(function(){
+        if(isPlaying){
+            radio.load();
+            radio.play().then(() => {
+                statusText.innerHTML = "Online";
+            }).catch(function(){
+                statusText.innerHTML = "Errore Stream";
+            });
+        }
+    }, 5000);
 }
 
 /* CONTATORE SINCRONIZZATO - uguale per tutti basato sull'orario */
