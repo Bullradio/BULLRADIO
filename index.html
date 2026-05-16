@@ -264,10 +264,10 @@ function toggleRadio(){
 
         radio.pause();
 
-        playBtn.innerHTML = "PLAY";
-        statusText.innerHTML = "PAUSA";
+playBtn.innerHTML = "PLAY";
+statusText.innerHTML = "Premi PLAY";
 
-        isPlaying = false;
+isPlaying = false;
     }
 }
 
@@ -276,16 +276,19 @@ radio.onplaying = function(){
 }
 
 radio.onerror = function(){
+    isPlaying = false;
+    playBtn.innerHTML = "PLAY";
     statusText.innerHTML = "Riconnessione...";
     setTimeout(function(){
-        if(isPlaying){
-            radio.load();
-            radio.play().then(() => {
-                statusText.innerHTML = "Online";
-            }).catch(function(){
-                statusText.innerHTML = "Errore Stream";
-            });
-        }
+        radio.load();
+        radio.play().then(() => {
+            playBtn.innerHTML = "STOP";
+            statusText.innerHTML = "Online";
+            isPlaying = true;
+        }).catch(function(){
+            statusText.innerHTML = "Errore Stream";
+            isPlaying = false;
+        });
     }, 5000);
 }
 
