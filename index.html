@@ -246,7 +246,7 @@ let isPlaying = false;
 function toggleRadio(){
 
     if(!isPlaying){
-        audioContext.resume();
+          initAudio();
 
         radio.play().then(() => {
 
@@ -333,67 +333,41 @@ updateListeners();
 // Aggiorna ogni 90 secondi
 setInterval(updateListeners, 90000);
 
-    /* CONTROLLO SILENZIO STREAM */
-
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-const source = audioContext.createMediaElementSource(radio);
-
-const analyser = audioContext.createAnalyser();
-
-source.connect(analyser);
-analyser.connect(audioContext.destination);
-
-analyser.fftSize = 256;
-
-const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
+let audioContext = null;
+let analyser = null;
+let dataArray = null;
 let silenceStart = null;
 
+function initAudio(){
+    if(audioContext) return;
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioContext.createMediaElementSource(radio);
+    analyser = audioContext.createAnalyser();
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    analyser.fftSize = 256;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+}
+
 function checkSilence(){
-
-    if(!isPlaying) return;
-
+    if(!isPlaying || !analyser) return;
     analyser.getByteFrequencyData(dataArray);
-
     let sum = 0;
-
     for(let i = 0; i < dataArray.length; i++){
         sum += dataArray[i];
     }
-
     let average = sum / dataArray.length;
-
-    /* soglia silenzio */
-
     if(average < 3){
-
-        if(!silenceStart){
-            silenceStart = Date.now();
-        }
-
-        /* 20 secondi di silenzio */
-
+        if(!silenceStart) silenceStart = Date.now();
         if(Date.now() - silenceStart > 20000){
-
             statusText.innerHTML = "Riconnessione...";
-
-            radio.pause();
-
-            radio.load();
-
-            radio.play();
-
+            tentaRiconnessione();
             silenceStart = null;
         }
-
     }else{
-
         silenceStart = null;
     }
 }
-
-/* controllo ogni 3 secondi */
 
 setInterval(checkSilence, 3000);
 
