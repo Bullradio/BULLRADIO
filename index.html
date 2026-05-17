@@ -274,6 +274,9 @@ isPlaying = false;
 radio.onplaying = function(){
     statusText.innerHTML = "Online";
 }
+
+let staRiconnettendo = false;
+
 radio.onerror = function(){
     isPlaying = false;
     playBtn.innerHTML = "PLAY";
@@ -282,6 +285,8 @@ radio.onerror = function(){
 }
 
 function tentaRiconnessione(){
+    if(staRiconnettendo) return;
+    staRiconnettendo = true;
     setTimeout(function(){
         radio.src = "http://sr10.inmystream.it:8227/stream";
         radio.load();
@@ -289,13 +294,39 @@ function tentaRiconnessione(){
             playBtn.innerHTML = "STOP";
             statusText.innerHTML = "Online";
             isPlaying = true;
+            staRiconnettendo = false;
         }).catch(function(){
             statusText.innerHTML = "Riconnessione...";
+            staRiconnettendo = false;
             tentaRiconnessione();
         });
     }, 5000);
 }
+let silenceStart = null;
 
+function checkSilence(){
+    if(!isPlaying) return;
+    let currentTime = radio.currentTime;
+    setTimeout(function(){
+        if(!isPlaying) return;
+        if(radio.currentTime === currentTime){
+            if(!silenceStart) silenceStart = Date.now();
+            if(Date.now() - silenceStart > 20000){
+                silenceStart = null;
+                statusText.innerHTML = "Riconnessione...";
+                isPlaying = false;
+                playBtn.innerHTML = "PLAY";
+                staRiconnettendo = false;
+                tentaRiconnessione();
+            }
+        }else{
+            silenceStart = null;
+        }
+    }, 3000);
+}
+
+setInterval(checkSilence, 3000);
+    
 /* CONTATORE SINCRONIZZATO - uguale per tutti basato sull'orario */
 
 // 25 numeri base tra 800 e 2000
